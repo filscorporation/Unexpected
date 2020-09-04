@@ -8,6 +8,7 @@ namespace Source
         public static ResourcesManager Instance;
 
         [SerializeField] public Sprite Line;
+        [SerializeField] public Transform LineParent;
 
         private void Awake()
         {

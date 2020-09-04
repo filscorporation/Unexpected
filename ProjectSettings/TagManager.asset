@@ -3,7 +3,8 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 2
-  tags: []
+  tags:
+  - Island
   layers:
   - Default
   - TransparentFX
@@ -40,4 +41,19 @@ TagManager:
   m_SortingLayers:
   - name: Default
     uniqueID: 0
+    locked: 0
+  - name: Path
+    uniqueID: 3302381783
+    locked: 0
+  - name: Water
+    uniqueID: 2588323461
+    locked: 0
+  - name: OnWater
+    uniqueID: 1316650343
+    locked: 0
+  - name: Ship
+    uniqueID: 1153519205
+    locked: 0
+  - name: Cloud
+    uniqueID: 4226391417
     locked: 0

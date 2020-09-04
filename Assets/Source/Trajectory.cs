@@ -7,7 +7,9 @@ namespace Source
 {
     public class Trajectory : MonoBehaviour
     {
-        private static float minDistance = 0.4f;
+        private const float MIN_DISTANCE = 0.6f;
+
+        private int index = 1;
         
         private struct Point
         {
@@ -22,7 +24,7 @@ namespace Source
         }
         private List<Point> line = new List<Point>();
         
-        public void Add(Vector2 point)
+        public void Push(Vector2 point)
         {
             if (line.Count == 0)
             {
@@ -30,17 +32,58 @@ namespace Source
                 return;
             }
 
-            if (Vector2.Distance(point, line.Last().position) < minDistance)
-                return;
-            
-            GameObject go = new GameObject("Point " + line.Count, typeof(SpriteRenderer));
-            SpriteRenderer sr = go.GetComponent<SpriteRenderer>();
-            sr.sprite = ResourcesManager.Instance.Line;
-            go.transform.position = (line.Last().position + point) / 2;
-            float angle = Mathf.Rad2Deg * Mathf.Atan2(
-                point.y - line.Last().position.y, point.x - line.Last().position.x);
-            go.transform.eulerAngles = new Vector3(0, 0, angle);
-            line.Add(new Point(point, sr));
+            Point last = line.Last();
+            float dist = Vector2.Distance(point, last.position);
+            float step = MIN_DISTANCE;
+
+            while (dist > MIN_DISTANCE)
+            {
+                GameObject go = new GameObject("Point " + line.Count, typeof(SpriteRenderer));
+                go.transform.SetParent(ResourcesManager.Instance.LineParent);
+                SpriteRenderer sr = go.GetComponent<SpriteRenderer>();
+                sr.sprite = ResourcesManager.Instance.Line;
+                Vector2 position = last.position + (point - last.position).normalized * step;
+                go.transform.position = position;
+                float angle = Mathf.Rad2Deg * Mathf.Atan2(
+                    point.y - last.position.y, point.x - last.position.x);
+                go.transform.eulerAngles = new Vector3(0, 0, angle);
+                line.Add(new Point(position, sr));
+
+                dist -= MIN_DISTANCE;
+                step += MIN_DISTANCE;
+            }
+        }
+
+        public Vector2? Peek()
+        {
+            if (!line.Any())
+                return null;
+
+            if (index >= line.Count)
+            {
+                return null;
+            }
+
+            return line[index].position;
+        }
+
+        public Vector2? Pop()
+        {
+            if (!line.Any())
+                return null;
+
+            if (index >= line.Count)
+            {
+                line.Clear();
+                return null;
+            }
+
+            Vector2 result = line[index].position;
+            if (line[index].sprite != null)
+                Destroy(line[index].sprite.gameObject);
+            index++;
+
+            return result;
         }
 
         public void Clear()
@@ -51,6 +94,7 @@ namespace Source
             }
 
             line.Clear();
+            index = 1;
         }
     }
 }
