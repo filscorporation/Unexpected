@@ -15,6 +15,7 @@ namespace Source
         private bool dragBegan = false;
         private Vector2? nextPoint;
         private Animator animator;
+        private bool isActive = true;
 
         #region Event functions
 
@@ -36,6 +37,9 @@ namespace Source
 
         private void FixedUpdate()
         {
+            if (!isActive)
+                return;
+            
             List<Collider2D> hits = new List<Collider2D>();
             if (Physics2D.OverlapCircle(transform.position, size, new ContactFilter2D(), hits) > 0)
             {
@@ -82,6 +86,9 @@ namespace Source
 
         private void OnMouseDrag()
         {
+            if (GameManager.IsPaused)
+                return;
+            
             if (!canControl)
                 return;
             
@@ -106,8 +113,11 @@ namespace Source
         
         public void Crash()
         {
+            GameManager.Instance.AddShipwreck();
+            
             nextPoint = null;
             canControl = false;
+            isActive = false;
             trajectory.Clear();
             animator.SetTrigger("Shipwreck");
             Destroy(GetComponent<Collider2D>());
@@ -116,8 +126,11 @@ namespace Source
 
         private void Park()
         {
+            GameManager.Instance.AddShip();
+            
             nextPoint = null;
             canControl = false;
+            isActive = false;
             trajectory.Clear();
             animator.SetTrigger("Park");
             Destroy(GetComponent<Collider2D>());

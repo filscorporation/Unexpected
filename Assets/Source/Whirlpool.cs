@@ -11,8 +11,24 @@ namespace Source
 
         private void Start()
         {
-            Destroy(gameObject, LIFETIME);
+            StartCoroutine(Finish());
             StartCoroutine(Activate());
+        }
+
+        private void Update()
+        {
+            if (GameManager.IsPaused)
+            {
+                GetComponent<Animator>()?.StopPlayback();
+            }
+        }
+
+        private IEnumerator Finish()
+        {
+            yield return new WaitForSeconds(LIFETIME);
+            yield return new WaitWhile(() => GameManager.IsPaused);
+            
+            Destroy(gameObject);
         }
 
         private IEnumerator Activate()

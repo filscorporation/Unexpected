@@ -19,6 +19,7 @@ namespace Source
         [SerializeField] private GameObject prefab;
         [SerializeField] private float periodMin;
         [SerializeField] private float periodMax;
+        [SerializeField] private float step;
 
         private void Start()
         {
@@ -36,7 +37,14 @@ namespace Source
         private IEnumerator Spawn()
         {
             float timeout = Random.Range(periodMin, periodMax);
+            periodMin -= step;
+            if (periodMin < 0)
+                periodMin = 0.5f;
+            periodMax -= step;
+            if (periodMax < 0)
+                periodMax = 1f;
             yield return new WaitForSeconds(timeout);
+            yield return new WaitWhile(() => GameManager.IsPaused);
 
             Vector2 position;
             switch (spawnType)
@@ -53,7 +61,7 @@ namespace Source
                 default:
                     throw new ArgumentOutOfRangeException();
             }
-            GameObject go = Instantiate(prefab, position, Quaternion.identity);
+            Instantiate(prefab, position, Quaternion.identity);
         }
     }
 }

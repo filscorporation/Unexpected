@@ -16,6 +16,9 @@ namespace Source
 
         private void Update()
         {
+            if (GameManager.IsPaused)
+                return;
+            
             transform.position = Vector2.MoveTowards(transform.position, target, speed * Time.deltaTime);
             if (Vector2.Distance(target, transform.position) < Mathf.Epsilon)
                 Destroy(gameObject);
